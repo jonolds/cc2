@@ -1,4 +1,4 @@
 #!/bin/bash
 git add .
-git commit -m "linux"
+git commit -m "linux push.sh"
 git push
