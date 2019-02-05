@@ -19,7 +19,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 public class BigramCount {
-	static final String DEL = " --------";
+	static final String DEL = " *-------";
 	
 	public static class TokenizerMapper extends Mapper<Object, Text, PairText, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
