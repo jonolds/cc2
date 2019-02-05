@@ -4,7 +4,7 @@ echo JAVAC
 javac BigramCount.java -Xlint:deprecation -d ./target/classes
 echo JAR
 cp target/classes/BigramCount*.class .
-jar -cvf BigramCount.jar target/classes/BigramCount*.class 
+jar -cvf BigramCount.jar BigramCount*.class 
 rm ./BigramCount*.class
 echo HADOOP
 hadoop jar BigramCount.jar BigramCount input output
