@@ -5,4 +5,4 @@ jar -cvf BigramCount.jar ./BigramCount*.class
 rm ./BigramCount*.class
 hadoop jar BigramCount.jar BigramCount input output
 cat ./output/part-r-00000
-#cat ./output/mapCall*
+tar -cvf pa2_olds.tar input output BigramCount.java answer.txt
