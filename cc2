@@ -1,7 +1,7 @@
 #!/bin/bash
 cp src/BigramCount.java .
-javac BigramCount.java -Xlint:deprecation
-jar -cvf BigramCount.jar ./BigramCount*.class -d ./target/classes
+javac BigramCount.java -Xlint:deprecation -d ./target/classes
+jar -cvf BigramCount.jar ./BigramCount*.class 
 rm ./BigramCount*.class
 hadoop jar BigramCount.jar BigramCount input output
 tar -cvf pa2_olds.tar input output BigramCount.java answer.txt
