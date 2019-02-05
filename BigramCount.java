@@ -16,20 +16,18 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 //@SuppressWarnings("unused")
 public class BigramCount {
-	static final String DEL = "*-*-*";
+	static final String DEL = "\t***Mapper Call Count: ";
 	
 	public static class TokenizerMapper extends Mapper<Object, Text, PairText, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
-		private final static PairText count = new PairText(DEL, "Bigram Count: ");
+		private final static PairText mapcount = new PairText(DEL, "", 1);
 		
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-			context.write(count, one);
+			context.write(mapcount, one);
 			
 			String last = null;
 			StringTokenizer itr = new StringTokenizer(value.toString());
@@ -45,29 +43,17 @@ public class BigramCount {
 	}
 	
 	public static class IntSumReducer extends Reducer<PairText, IntWritable, PairText, IntWritable> {
-		private MultipleOutputs<PairText, IntWritable> mos;
-		public void setup(Context context) { 
-			mos = new MultipleOutputs<PairText, IntWritable>(context);
-		}
 		
 		public void reduce(PairText key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			int sum = StreamSupport.stream(values.spliterator(), false).mapToInt(x->x.get()).sum();
-			
-			if(key.a().startsWith(DEL)) {
-				System.out.println(key.b() + " " + sum);
-				mos.write("mapCallCount", key.b(), new IntWritable(sum));
-			}
-			else
-				context.write(key, new IntWritable(sum));
+			context.write(key, new IntWritable(sum));
 		}
-		public void cleanup(Context context) throws IOException, InterruptedException { mos.close(); }
 	}
 	
 	public static void main(String[] args) throws Exception {
 		Job job = init(args);
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		MultipleOutputs.addNamedOutput(job, "mapCallCount", TextOutputFormat.class, Text.class, IntWritable.class);
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 	
@@ -91,10 +77,15 @@ public class BigramCount {
 	}
 	static class PairText implements WritableComparable<PairText> {  
 		public Text a, b;
+		public IntWritable p;
 		
-		public PairText() { this.a = new Text(); this.b = new Text(); }
-		public PairText(String a,String b) { this.a = new Text(a); this.b = new Text(b); }
-		public PairText(String a) { this.a = new Text(a); this.b = new Text("");}
+		public PairText(String a, String b, int pr) {
+			this.a = new Text(a); 
+			this.b = new Text(b); 
+			this.p = new IntWritable(pr);
+		}
+		public PairText() { this("", "", 0); }
+		public PairText(String a,String b) { this(a, b, 0); }
 		
 		public String a() { return a.toString(); }
 		public String b() { return b.toString(); }
@@ -102,12 +93,22 @@ public class BigramCount {
 		public void set(Text a,Text b) { this.a = a; this.b = b; }
 		public void set(String a, String b) { this.a = new Text(a); this.b = new Text(b); }
 		
-		public String toString() { return a + " " + b; }
+		public String toString() { return a + " " + b;}
 		
-		public void readFields(DataInput in) throws IOException { a.readFields(in); b.readFields(in); }
-		public void write(DataOutput out) throws IOException { a.write(out); b.write(out); }
+		public void readFields(DataInput in) throws IOException { 
+			a.readFields(in);
+			b.readFields(in); 
+			p.readFields(in);
+		}
+		public void write(DataOutput out) throws IOException { 
+			a.write(out); 
+			b.write(out);
+			p.write(out);
+		}
 		
 		public int compareTo(PairText o) {
+			if(p.compareTo(o.p) != 0)
+				return p.compareTo(o.p);
 		    return a.compareTo(o.a) != 0 ? a.compareTo(o.a) : b.compareTo(o.b);
 		}
 		public boolean equals(PairText o) {
@@ -115,4 +116,3 @@ public class BigramCount {
 		}
 	}
 }
-

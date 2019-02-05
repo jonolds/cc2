@@ -4,5 +4,5 @@ javac BigramCount.java -Xlint:deprecation
 jar -cvf BigramCount.jar ./BigramCount*.class
 rm ./BigramCount*.class
 hadoop jar BigramCount.jar BigramCount input output
-#cat ./output/part-r-00000
-cat ./output/mapCall*
+cat ./output/part-r-00000
+#cat ./output/mapCall*
