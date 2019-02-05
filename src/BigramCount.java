@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -63,7 +63,7 @@ public class BigramCount {
 			System.err.println("Usage: wordcount <in> <out>");
 			System.exit(2);
 		}
-		FileUtils.deleteDirectory(new File(otherArgs[1]));
+//		FileUtils.deleteDirectory(new File(otherArgs[1]));
 		Job job = Job.getInstance(conf, "bigram count");
 		
 		job.setJarByClass(BigramCount.class);
