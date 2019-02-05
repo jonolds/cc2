@@ -16,7 +16,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.LazyOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -90,30 +89,30 @@ public class BigramCount {
 		job.setOutputValueClass(IntWritable.class);
 		return job;
 	}
+	static class PairText implements WritableComparable<PairText> {  
+		public Text a, b;
+		
+		public PairText() { this.a = new Text(); this.b = new Text(); }
+		public PairText(String a,String b) { this.a = new Text(a); this.b = new Text(b); }
+		public PairText(String a) { this.a = new Text(a); this.b = new Text("");}
+		
+		public String a() { return a.toString(); }
+		public String b() { return b.toString(); }
+		
+		public void set(Text a,Text b) { this.a = a; this.b = b; }
+		public void set(String a, String b) { this.a = new Text(a); this.b = new Text(b); }
+		
+		public String toString() { return a + " " + b; }
+		
+		public void readFields(DataInput in) throws IOException { a.readFields(in); b.readFields(in); }
+		public void write(DataOutput out) throws IOException { a.write(out); b.write(out); }
+		
+		public int compareTo(PairText o) {
+		    return a.compareTo(o.a) != 0 ? a.compareTo(o.a) : b.compareTo(o.b);
+		}
+		public boolean equals(PairText o) {
+		    return a.equals(o.a) && b.equals(o.b) ? true : false;
+		}
+	}
 }
 
-class PairText implements WritableComparable<PairText> {  
-	public Text a, b;
-	
-	public PairText() { this.a = new Text(); this.b = new Text(); }
-	public PairText(String a,String b) { this.a = new Text(a); this.b = new Text(b); }
-	public PairText(String a) { this.a = new Text(a); this.b = new Text("");}
-	
-	public String a() { return a.toString(); }
-	public String b() { return b.toString(); }
-	
-	public void set(Text a,Text b) { this.a = a; this.b = b; }
-	public void set(String a, String b) { this.a = new Text(a); this.b = new Text(b); }
-	
-	public String toString() { return a + " " + b; }
-	
-	public void readFields(DataInput in) throws IOException { a.readFields(in); b.readFields(in); }
-	public void write(DataOutput out) throws IOException { a.write(out); b.write(out); }
-	
-	public int compareTo(PairText o) {
-	    return a.compareTo(o.a) != 0 ? a.compareTo(o.a) : b.compareTo(o.b);
-	}
-	public boolean equals(PairText o) {
-	    return a.equals(o.a) && b.equals(o.b) ? true : false;
-	}
-}
