@@ -18,13 +18,12 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-//@SuppressWarnings("unused")
 public class BigramCount {
-	static final String DEL = "\t***Mapper Call Count: ";
+	static final String DEL = " --------";
 	
 	public static class TokenizerMapper extends Mapper<Object, Text, PairText, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
-		private final static PairText mapcount = new PairText(DEL, "", 1);
+		private final static PairText mapcount = new PairText(DEL, "Mapper Call Count: ", 1);
 		
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			context.write(mapcount, one);
@@ -75,6 +74,7 @@ public class BigramCount {
 		job.setOutputValueClass(IntWritable.class);
 		return job;
 	}
+	
 	static class PairText implements WritableComparable<PairText> {  
 		public Text a, b;
 		public IntWritable p;
