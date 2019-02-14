@@ -1,10 +1,6 @@
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.StringTokenizer;
 import java.util.stream.StreamSupport;
 
@@ -65,8 +61,7 @@ public class BigramCount {
 			System.err.println("Usage: wordcount <in> <out>");
 			System.exit(2);
 		}
-		if(new File("output").exists())
-			Files.walk(Paths.get("output")).sorted(Comparator.reverseOrder()).forEach(x->x.toFile().delete());
+ 
 		
 		Job job = Job.getInstance(conf, "bigram count");
 		job.setJarByClass(BigramCount.class);
