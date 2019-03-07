@@ -1,0 +1,18 @@
+(1) EXPLAIN HOW TO COUNT BIGRAMS AND FIGURE OUT HOW MANY MAP TASKS ARE LAUNCHED IN MAP STAGE
+	I counted bigrams by creating a new data structure, 'PairText', that holds two Text variables (a and b).
+	Each time map() is called, a String variable, 'last', is initialized as empty. Each time the iteration 
+	loop runs, it checks if 'last' has a word value. If so, it writes two new PairTexts to Context:
+		PairText(current, last) and PairText(last, current) .
+	It then sets 'last' to value in 'current'.
+	
+	I counted map() calls by writing an additional PairText to context each time it was called:
+		PairText(" --------", "Mapper Call Count: ") ,
+	which adds an output line of " -------- Mapper Call Count: 	318".
+	
+	In order to print this line at the end of the file, I also added an IntWritable, 'p' (for priority), to
+	the PairText structure that's set to '0' for real words and '1' for each map() count entry. I reordered
+	the comparator to always sort by priority first so the map count shows at the end.
+	I overloaded the toString() method so that it doesn't write the priority value to the output.
+
+(2) PROVIDE YOUR SOLUTION TO THE NUMBER OF MAP TASKS
+	318
