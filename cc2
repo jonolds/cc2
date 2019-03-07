@@ -1,5 +1,5 @@
 #!/bin/bash
-tarname="pa2_olds.tar"
+tarname="pa2_olds"
 mainclass="BigramCount"
 
 # DELETE TAR / CLEAR STAGING
